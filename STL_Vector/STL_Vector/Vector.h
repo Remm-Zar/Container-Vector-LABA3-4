@@ -19,6 +19,10 @@ public:
 		VectorIterator(const VectorIterator& it):VectorIterator(it.m_pos,it.m_vec)
 		{}
 		~VectorIterator(){}
+		T* GetVec()
+		{
+			return m_vec;
+		}
 		VectorIterator& operator++()
 		{
 			++m_pos;
@@ -249,11 +253,11 @@ public:
 	}
 	IT begin()
 	{
-		return IT(&m_vector[0]);
+		return IT(&m_vector[0],m_vector);
 	}
 	IT end()
 	{
-		return IT(&m_vector[m_amount]);
+		return IT(&m_vector[m_amount],m_vector);
 	}
 	Vector& pushBack(const T elem)noexcept//E!
 	{

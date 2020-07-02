@@ -78,4 +78,16 @@ void sort(T begin, T end, T2& other)
         ++begin;
     }
 }
-
+template<class T, class T2>
+void copy_if(T begin, T end, T pos, T2& other)
+{
+    while (begin != end)
+    {
+        if (other(*begin))
+        {
+            *pos = *begin;
+            ++pos;
+        }
+        ++begin;
+    }
+}
