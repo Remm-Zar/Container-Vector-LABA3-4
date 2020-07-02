@@ -1,5 +1,6 @@
 #pragma once
 template <typename T, class T1>
+// other ПЕРЕДАЁТСЯ ПО ЗНАЧЕНИЮ
 T Find_if(T begin, T end, T1& other)
 {
     while (begin != end)
@@ -27,6 +28,9 @@ T Min_element(T begin, T end)
         }
         ++begin;
     }
+    // YES - ЛИШНЯЯ ПЕРЕМЕННАЯ, МИНИМАЛЬНОЕ ЧИСЛО ВСЕГДА НАЙДЁТСЯ,
+    // ЕСЛИ КОНТЕЙНЕР НЕ ПУСТОЙ
+    // НАДО ВСЕГДА ВОЗВРАЩАТЬ Min, У НЕГО ЖЕ ВСЕГДА ЕСТЬ ЗНАЧЕНИЕ
     if (YES)return Min;
     else return end;
 }
@@ -48,6 +52,9 @@ T Max_element(T begin, T end)
     if (YES)return Max;
     else return end;
 }
+
+// For_each ВОЗВРАЩАЕТ ЗНАЧЕНИЕ
+// http://www.cplusplus.com/reference/algorithm/for_each/?kw=for_each
 template<class T, class T1>
 void For_each(T begin, T end, T1& other)
 {
@@ -78,6 +85,9 @@ void sort(T begin, T end, T2& other)
         ++begin;
     }
 }
+
+// ТОЖЕ ВОЗВРАЩАЕТ ЗНАЧЕНИЕ
+// http://www.cplusplus.com/reference/algorithm/copy_if/?kw=copy_if
 template<class T, class T2>
 void copy_if(T begin, T end, T pos, T2& other)
 {

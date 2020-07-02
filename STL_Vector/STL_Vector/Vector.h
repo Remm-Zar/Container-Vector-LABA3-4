@@ -28,6 +28,9 @@ public:
 			++m_pos;
 			return *this;
 		}
+        // НЕЛЬЗЯ ВОЗВРАЩАТЬ ССЫЛКИ НА ЛОКАЛЬНЫЕ ПЕРЕМЕННЫЕ,
+        // ПЕРЕМЕННАЯ ПОСЛЕ ВЫХОДА ИЗ ФУНКЦИИ УНИЧТОЖИТСЯ И
+        // ССЫЛКА ОКАЖЕТСЯ ВИСЯЧЕЙ
 		VectorIterator& operator++(int)
 		{
 			VectorIterator temp(*this);
@@ -65,6 +68,8 @@ public:
 		{
 			return m_pos;
 		}
+        // ОПЕРАТОР СЛОЖЕНИЯ ДОЛЖЕН ИЗМЕНЯТЬ КОПИЮ, ОБЪЕКТ this
+        // МЕНЯЕТ ОПЕРАТОР +=
 		VectorIterator& operator +(int a)
 		{
 			m_pos += a;
@@ -81,6 +86,10 @@ public:
 		}
 		VectorIterator& operator +=(int a)
 		{
+            // ЗДЕСЬ ВОЗВРАЩАЕТСЯ ССЫЛКА НА ВРЕМЕННЫЙ ОБЪЕКТ, В КОТОРЫЙ
+            // ЗАПИШЕТСЯ РЕЗУЛЬТАТ СЛОЖЕНИЯ, ТОЖЕ НЕЛЬЗЯ ТАК ДЕЛАТЬ,
+            // ОБЪЕКТ УНИЧТОЖИТСЯ ПОСЛЕ ВЫХОДА ИЗ ФУНКЦИИ
+            // ВООБЩЕ ЭТОТ ОПЕРАТОР ДОЛЖЕН ИЗМЕНЯТЬ И ВОЗВРАЩАТЬ this
 			return *this + a;
 		}
 		VectorIterator& operator -=(int a)
@@ -196,6 +205,9 @@ public:
 		}
 		return *this;
 	}
+    // НЕТ ТАКОГО ОПЕРАТОРА В ВЕКТОРЕ, СЛИШКОМ ДОРОГО ОБХОДИТСЯ ЕГО ВЫПОЛНЕНИЕ
+    // СЛОЖНОСТЬ ЭТОЙ ОПЕРАЦИИ ЛИНЕЙНАЯ, А БОЛЬШИНСТВО ОПЕРАЦИЙ В ВЕКТОРЕ - КОНСТАНТНЫЕ,
+    // ЗА ИСКЛЮЧЕНИЕМ ВСТАВКИ В СЕРЕДИНУ
 	bool operator==(const Vector& v)//E!
 	{
 		if ((m_amount != v.m_amount)||(m_len!=v.m_len))
@@ -237,6 +249,7 @@ public:
 	}
 	T& operator [](int index)//E!
 	{
+        // ДИАПАЗОН ПРОВЕРЯЕТ ТОЛЬКО ФУНКЦИЯ at
 		if ((index < 0) || (index >= m_amount))
 		{
 			throw exception("Wrong index");
@@ -367,6 +380,9 @@ public:
 		{
 			throw exception("Wrong amount");
 		}
+        // begin() + num МОЖЕТ ВЫЙТИ ЗА ПРЕДЕЛЫ ВЫДЕЛЕННОЙ РАНЕЕ ПАМЯТИ
+        // ТУТ НАДО ЯВНО ВЫДЕЛИТЬ НОВЫЙ (БОЛЬШИЙ) КУСОК ПАМЯТИ И СКОПИРОВАТЬ
+        // ТУДА ВСЕ СТАРЫЕ ЭЛЕМЕНТЫ, СТАРУЮ ПАМЯТЬ ОЧИСТИТЬ
 		IT beg = begin(), end = begin() + num;
 		Vector temp(beg, end);
 		if (num < m_amount)
