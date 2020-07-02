@@ -2,7 +2,7 @@
 #include <initializer_list>
 #include <iostream>
 using namespace std;
-template <typename T>
+template <class T>
 class Vector
 {	
 	T* m_vector=nullptr;
@@ -107,10 +107,10 @@ public:
 		{
 			return !(*this < it);
 		}
-		operator T*()
+		/*operator (T*)()
 		{
 			return *m_pos;
-		}
+		}*/
 	};
 	typedef VectorIterator IT;
 	Vector(){}
@@ -247,15 +247,15 @@ public:
 		}
 		return m_vector[index];
 	}
-	IT& begin()
+	IT begin()
 	{
-		return &m_vector[0];
+		return IT(&m_vector[0]);
 	}
-	IT& end()
+	IT end()
 	{
-		return &m_vector[m_amount];
+		return IT(&m_vector[m_amount]);
 	}
-	Vector& pushBack(const T &elem)noexcept//E!
+	Vector& pushBack(const T elem)noexcept//E!
 	{
 		_check_memory_(1,false);		
 		m_vector[m_amount] = elem;
@@ -272,7 +272,7 @@ public:
 		--m_amount;
 		return *this;
 	}
-	IT& insert(IT &pos, const T& elem)
+	IT insert(IT pos, const T elem)
 	{
 		if ((pos < begin()) || (pos >= end()))
 		{
@@ -292,7 +292,7 @@ public:
 		*(++loc_pos) = elem;
 		return loc_pos;
 	}
-	IT& insert(IT& pos, IT& _begin, IT& _end)//E!
+	IT insert(IT pos, IT _begin, IT _end)//E!
 	{
 		if ((pos < begin()) || (pos > end())||(_begin<begin())||(_begin>=end())||(_end<begin())||(_end>end()))
 		{
@@ -324,7 +324,7 @@ public:
 		m_amount += distance;
 		return ++it2;
 	}
-	IT& erase(IT& pos)
+	IT erase(IT pos)
 	{
 		if ((pos < begin()) || (pos >= end()))
 		{
@@ -399,5 +399,15 @@ public:
 			}
 			*this = move(temp);
 		}
+	}
+	friend ostream& operator<<(ostream& out, Vector& o)
+	{
+		Vector<T>::IT beg = o.begin();
+		while (beg != o.end())
+		{
+			out << *beg << " ";
+			++beg;
+		}
+		return out;
 	}
 };
