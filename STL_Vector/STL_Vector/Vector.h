@@ -31,7 +31,7 @@ public:
         // НЕЛЬЗЯ ВОЗВРАЩАТЬ ССЫЛКИ НА ЛОКАЛЬНЫЕ ПЕРЕМЕННЫЕ,
         // ПЕРЕМЕННАЯ ПОСЛЕ ВЫХОДА ИЗ ФУНКЦИИ УНИЧТОЖИТСЯ И
         // ССЫЛКА ОКАЖЕТСЯ ВИСЯЧЕЙ
-		VectorIterator& operator++(int)
+		VectorIterator operator++(int)//OK
 		{
 			VectorIterator temp(*this);
 			temp(*this);
@@ -70,10 +70,11 @@ public:
 		}
         // ОПЕРАТОР СЛОЖЕНИЯ ДОЛЖЕН ИЗМЕНЯТЬ КОПИЮ, ОБЪЕКТ this
         // МЕНЯЕТ ОПЕРАТОР +=
-		VectorIterator& operator +(int a)
+		VectorIterator operator +(int a)//OK
 		{
-			m_pos += a;
-			return *this;
+			VectorIterator temp(*this);
+			temp.m_pos += a;
+			return temp;
 		}
 		VectorIterator& operator -(int a)
 		{
@@ -84,13 +85,14 @@ public:
 		{
 			return m_pos - it.m_pos;
 		}
-		VectorIterator& operator +=(int a)
+		VectorIterator& operator +=(int a)//OK
 		{
+			*this=*this+ a;
             // ЗДЕСЬ ВОЗВРАЩАЕТСЯ ССЫЛКА НА ВРЕМЕННЫЙ ОБЪЕКТ, В КОТОРЫЙ
             // ЗАПИШЕТСЯ РЕЗУЛЬТАТ СЛОЖЕНИЯ, ТОЖЕ НЕЛЬЗЯ ТАК ДЕЛАТЬ,
             // ОБЪЕКТ УНИЧТОЖИТСЯ ПОСЛЕ ВЫХОДА ИЗ ФУНКЦИИ
             // ВООБЩЕ ЭТОТ ОПЕРАТОР ДОЛЖЕН ИЗМЕНЯТЬ И ВОЗВРАЩАТЬ this
-			return *this + a;
+			return *this;
 		}
 		VectorIterator& operator -=(int a)
 		{
@@ -205,36 +207,8 @@ public:
 		}
 		return *this;
 	}
-    // НЕТ ТАКОГО ОПЕРАТОРА В ВЕКТОРЕ, СЛИШКОМ ДОРОГО ОБХОДИТСЯ ЕГО ВЫПОЛНЕНИЕ
-    // СЛОЖНОСТЬ ЭТОЙ ОПЕРАЦИИ ЛИНЕЙНАЯ, А БОЛЬШИНСТВО ОПЕРАЦИЙ В ВЕКТОРЕ - КОНСТАНТНЫЕ,
-    // ЗА ИСКЛЮЧЕНИЕМ ВСТАВКИ В СЕРЕДИНУ
-	bool operator==(const Vector& v)//E!
+	Vector& operator=(Vector&& v)noexcept
 	{
-		if ((m_amount != v.m_amount)||(m_len!=v.m_len))
-		{
-			return 0;
-		}
-		else
-		{
-			IT b = begin(), e = end(),b_e=const_cast<Vector&>(v).begin();
-			while (b != e)
-			{
-				if (*b != *b_e)
-				{
-					return 0;
-				}
-				++b;
-				++b_e;
-			}
-			return 1;
-		}
-	}
-	Vector& operator=(Vector&& v)noexcept//E!
-	{
-		if (*this == v)
-		{
-			return *this;
-		}
 		if (m_vector != nullptr)
 		{
 			delete[]m_vector;
@@ -247,13 +221,8 @@ public:
 		v.m_amount = 0;
 		return *this;
 	}
-	T& operator [](int index)//E!
+	T& operator [](int index)
 	{
-        // ДИАПАЗОН ПРОВЕРЯЕТ ТОЛЬКО ФУНКЦИЯ at
-		if ((index < 0) || (index >= m_amount))
-		{
-			throw exception("Wrong index");
-		}
 		return m_vector[index];
 	}
 	T at(int index)const//E!
@@ -383,21 +352,12 @@ public:
         // begin() + num МОЖЕТ ВЫЙТИ ЗА ПРЕДЕЛЫ ВЫДЕЛЕННОЙ РАНЕЕ ПАМЯТИ
         // ТУТ НАДО ЯВНО ВЫДЕЛИТЬ НОВЫЙ (БОЛЬШИЙ) КУСОК ПАМЯТИ И СКОПИРОВАТЬ
         // ТУДА ВСЕ СТАРЫЕ ЭЛЕМЕНТЫ, СТАРУЮ ПАМЯТЬ ОЧИСТИТЬ
-		IT beg = begin(), end = begin() + num;
-		Vector temp(beg, end);
-		if (num < m_amount)
+		Vector temp(num);
+		for (auto th=begin(),i = temp.begin(); i < temp.end(); ++i,++th)
 		{
-			*this = move(temp);		
+			*i = *th;
 		}
-		else
-		{
-			if (num > m_amount)
-			{
-				temp._check_memory_(num - m_amount, true);
-				temp.m_amount = num;
-				*this = move(temp);
-			}
-		}
+		*this = move(temp);
 	}
 	void clear()
 	{

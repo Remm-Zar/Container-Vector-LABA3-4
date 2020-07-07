@@ -27,6 +27,7 @@ int main()
     cout << "\nINT";
     cout << "\ninsert (1):\n";
     i.insert(i.begin() + 4, i.begin() + 1, i.end() - 1);
+    i.resize(15);
     cout << i;
     i.pushBack(152);
     i.pushBack(1);
