@@ -28,9 +28,6 @@ public:
 			++m_pos;
 			return *this;
 		}
-        // НЕЛЬЗЯ ВОЗВРАЩАТЬ ССЫЛКИ НА ЛОКАЛЬНЫЕ ПЕРЕМЕННЫЕ,
-        // ПЕРЕМЕННАЯ ПОСЛЕ ВЫХОДА ИЗ ФУНКЦИИ УНИЧТОЖИТСЯ И
-        // ССЫЛКА ОКАЖЕТСЯ ВИСЯЧЕЙ
 		VectorIterator operator++(int)//OK
 		{
 			VectorIterator temp(*this);
@@ -68,8 +65,6 @@ public:
 		{
 			return m_pos;
 		}
-        // ОПЕРАТОР СЛОЖЕНИЯ ДОЛЖЕН ИЗМЕНЯТЬ КОПИЮ, ОБЪЕКТ this
-        // МЕНЯЕТ ОПЕРАТОР +=
 		VectorIterator operator +(int a)//OK
 		{
 			VectorIterator temp(*this);
@@ -88,10 +83,6 @@ public:
 		VectorIterator& operator +=(int a)//OK
 		{
 			*this=*this+ a;
-            // ЗДЕСЬ ВОЗВРАЩАЕТСЯ ССЫЛКА НА ВРЕМЕННЫЙ ОБЪЕКТ, В КОТОРЫЙ
-            // ЗАПИШЕТСЯ РЕЗУЛЬТАТ СЛОЖЕНИЯ, ТОЖЕ НЕЛЬЗЯ ТАК ДЕЛАТЬ,
-            // ОБЪЕКТ УНИЧТОЖИТСЯ ПОСЛЕ ВЫХОДА ИЗ ФУНКЦИИ
-            // ВООБЩЕ ЭТОТ ОПЕРАТОР ДОЛЖЕН ИЗМЕНЯТЬ И ВОЗВРАЩАТЬ this
 			return *this;
 		}
 		VectorIterator& operator -=(int a)
@@ -290,12 +281,12 @@ public:
 		_check_memory_(distance,false);
 		IT loc_pos = begin() + pos_marker;
 		IT it1=end()-1, it2 =it1, lim=loc_pos-1;
-		if (loc_pos+1 < end())
+		if (loc_pos < end())
 		{			
 		    while (it1!=lim)
 		    {
 			    it1 + distance = *it2;
-			    it1 -= distance+1;
+				--it1;
 			    --it2;
 		    }
 		}
@@ -349,9 +340,6 @@ public:
 		{
 			throw exception("Wrong amount");
 		}
-        // begin() + num МОЖЕТ ВЫЙТИ ЗА ПРЕДЕЛЫ ВЫДЕЛЕННОЙ РАНЕЕ ПАМЯТИ
-        // ТУТ НАДО ЯВНО ВЫДЕЛИТЬ НОВЫЙ (БОЛЬШИЙ) КУСОК ПАМЯТИ И СКОПИРОВАТЬ
-        // ТУДА ВСЕ СТАРЫЕ ЭЛЕМЕНТЫ, СТАРУЮ ПАМЯТЬ ОЧИСТИТЬ
 		Vector temp(num);
 		for (auto th=begin(),i = temp.begin(); i < temp.end(); ++i,++th)
 		{
