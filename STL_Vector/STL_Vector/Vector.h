@@ -40,7 +40,7 @@ public:
 			--m_pos;
 			return *this;
 		}
-		VectorIterator& operator--(int)
+		VectorIterator operator--(int)
 		{
 			VectorIterator temp(*this);
 			--m_pos;
@@ -73,11 +73,12 @@ public:
 			temp.m_pos += a;
 			return temp;
 		}
-		VectorIterator& operator -(int a)
+		VectorIterator operator -(int a)
 		{
-			m_pos -= a;
+			VectorIterator temp(*this);
+			temp.m_pos -= a;
             // НАДО КОПИЮ ВОЗВРАЩАТЬ, ИСХОДНЫЙ ИТЕРАТОР МЕНЯТЬСЯ НЕ ДОЛЖЕН
-			return *this;
+			return temp;
 		}
 		int operator -(const VectorIterator& it)
 		{
@@ -116,10 +117,10 @@ public:
 		{
 			return !(*this < it);
 		}
-		/*operator (T*)()
+		operator T*()
 		{
 			return *m_pos;
-		}*/
+		}
 	};
 	typedef VectorIterator IT;
 	Vector(){}
@@ -145,7 +146,7 @@ public:
         // ЧТО ОНИ НЕ ДОЛЖНЫ МЕНЯТЬСЯ
         // ТАК НАДЁЖНЕЕ, КОМПИЛЯТОР БУДЕТ ПОДСКАЗЫВАТЬ В СЛУЧАЕ НЕПРЕДНАМЕРЕННОЙ
         // ПОПЫТКИ ИЗМЕНИТЬ ТАКОЙ ОБЪЕКТ
-		for (auto& elem : list)
+		for (const auto& elem : list)
 		{
 			m_vector[count] = elem;
 			++count;
@@ -153,9 +154,19 @@ public:
 	}
     // НАДО ПЕРЕДАВАТЬ ИТЕРАТОРЫ ПО ЗНАЧЕНИЮ, ТЫ ЖЕ ИЗМЕНЯЕШЬ ИХ ВНУТРИ ФУНКЦИИ,
     // ПОЭТОМУ СЕЙЧАС ОНИ ИЗМЕНЯТСЯ И В ВЫЗЫВАЮЩЕЙ ФУНКЦИИ
-	 Vector(IT &begin, IT& end):Vector(end - begin)
+	template <typename U=IT>
+	Vector(U begin, U end):Vector(end - begin)
 	{
 		int count = 0;
+		while (begin != end)
+		{
+			++count;
+			++begin;
+		}
+		m_amount=count;
+		m_vector = new T[m_amount + 4];
+		m_len = m_amount + 4;
+		
 		while (begin != end)
 		{
 			m_vector[count] = *begin;
@@ -202,10 +213,7 @@ public:
         // У ТЕБЯ ВСЕГДА В КОНСТРУКТОРЕ ЭТОТ УКАЗАТЕЛЬ ИНИЦИАЛИЗИРУЕТСЯ
         // (В КОНСТРУКТОРЕ ПО УМОЛЧАНИЮ БУДЕТ ИСПОЛЬЗОВАТЬСЯ ИНИЦИАЛИЗАЦИЯ
         //  ПРИ ОБЪЯВЛЕНИИ: T* m_vector = nullptr)
-        if (m_vector != nullptr)
-		{
-			delete[]m_vector;
-		}		
+		delete[]m_vector;		
 		m_amount = v.m_amount;
 		m_len = v.m_len;
 		m_vector = new T[m_len];
@@ -244,12 +252,12 @@ public:
 	IT begin()
 	{
         // ВМЕСТО &m_vector[0] ИСПОЛЬЗУЙ ПРОСТО m_vector
-		return IT(&m_vector[0],m_vector);
+		return IT(m_vector,m_vector);
 	}
 	IT end()
 	{
         // m_vector + m_amount - КАК ПО МНЕ, ТАК ЭТО НАГЛЯДНЕЕ БУДЕТ
-		return IT(&m_vector[m_amount],m_vector);
+		return IT(m_vector+m_amount,m_vector);
 	}
 	Vector& pushBack(const T elem)noexcept//E!
 	{

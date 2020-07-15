@@ -23,9 +23,9 @@ int main()
     auto lam1 = [](int a) {return a > 4; };
     auto lam2 = [](Fraction a, Fraction b) {return a < b; };
 
-    list<int> int_list = { 1, 2, 3 };
+    list<int> int_list = { 1, 2, 3 }; 
     // 1. ИСПРАВИТЬ КОД ВЕКТОРА ТАК, ЧТОБЫ СЛЕДУЮЩАЯ СТРОКА РАБОТАЛА
-    Vector<int> int_vector(int_list.begin(), int_list.end());
+   // Vector<int> int_vector(int_list.begin(), int_list.end());
     // 2. ПОСЧИТАТЬ ПРИ ПОМОЩИ АЛГОРИТМОВ ДВУМЯ СПОСОБАМИ СУММУ ЭЛЕМЕНТОВ В int_vector
     // 3. ДОБАВИТЬ В ВЕКТОР ФУНКЦИЮ emplace_back
     // http://www.cplusplus.com/reference/vector/vector/emplace_back/

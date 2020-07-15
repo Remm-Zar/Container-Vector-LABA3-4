@@ -55,12 +55,11 @@ T1 For_each(T begin, T end, T1 other)
     return move(other);
 }
 template<class T, class T2>
-void sort(T begin, T end, T2& other)
+void sort(T begin, T end, T2 other)
 {
     while (end - begin != (end - begin) / 2)
     {
         T cur = begin, c_end = end - 1;
-        ++end;
         while (c_end != cur)
         {
             if (other(*cur, *c_end))
