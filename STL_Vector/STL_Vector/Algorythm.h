@@ -77,6 +77,8 @@ void sort(T begin, T end, T2& other)
 }
 
 // http://www.cplusplus.com/reference/algorithm/copy_if/?kw=copy_if
+// ВХОДНОЙ И ВЫХОДНОЙ КОНТЕЙНЕРЫ МОГУТ БЫТЬ РАЗНЫЕ, ПОЭТОМУ И ТИПЫ
+// ИТЕРАТОРОВ ДОЛЖНЫ ОТЛИЧАТЬСЯ
 template<class T, class T2>
 T copy_if(T begin, T end, T pos, T2 other)
 {

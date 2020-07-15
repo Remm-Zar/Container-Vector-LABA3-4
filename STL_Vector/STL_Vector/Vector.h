@@ -30,7 +30,7 @@ public:
 		}
 		VectorIterator operator++(int)//OK
 		{
-			VectorIterator temp(*this);
+            VectorIterator temp(*this);
 			temp(*this);
 			++m_pos;
 			return temp;
@@ -44,6 +44,8 @@ public:
 		{
 			VectorIterator temp(*this);
 			--m_pos;
+            // ВОЗВРАЩАЕТСЯ ССЫЛКА НА ЛОКАЛЬНУЮ ПЕРЕМЕННУЮ,
+            // ТАК НЕЛЬЗЯ
 			return temp;
 		}
 		T& operator*()
@@ -74,6 +76,7 @@ public:
 		VectorIterator& operator -(int a)
 		{
 			m_pos -= a;
+            // НАДО КОПИЮ ВОЗВРАЩАТЬ, ИСХОДНЫЙ ИТЕРАТОР МЕНЯТЬСЯ НЕ ДОЛЖЕН
 			return *this;
 		}
 		int operator -(const VectorIterator& it)
@@ -137,12 +140,19 @@ public:
 	Vector(const initializer_list<T>& list) :Vector(list.size())
 	{ 
 		int count = 0;
+        // ИСПОЛЬЗУЙ const auto&
+        // ВСЕГДА НАДО ИСПЛЬЗОВАТЬ КОНСТАНТНЫЕ ОБЪЕКТЫ, ЕСЛИ ТОЧНО ЗНАЕМ,
+        // ЧТО ОНИ НЕ ДОЛЖНЫ МЕНЯТЬСЯ
+        // ТАК НАДЁЖНЕЕ, КОМПИЛЯТОР БУДЕТ ПОДСКАЗЫВАТЬ В СЛУЧАЕ НЕПРЕДНАМЕРЕННОЙ
+        // ПОПЫТКИ ИЗМЕНИТЬ ТАКОЙ ОБЪЕКТ
 		for (auto& elem : list)
 		{
 			m_vector[count] = elem;
 			++count;
 		}
 	}
+    // НАДО ПЕРЕДАВАТЬ ИТЕРАТОРЫ ПО ЗНАЧЕНИЮ, ТЫ ЖЕ ИЗМЕНЯЕШЬ ИХ ВНУТРИ ФУНКЦИИ,
+    // ПОЭТОМУ СЕЙЧАС ОНИ ИЗМЕНЯТСЯ И В ВЫЗЫВАЮЩЕЙ ФУНКЦИИ
 	 Vector(IT &begin, IT& end):Vector(end - begin)
 	{
 		int count = 0;
@@ -185,7 +195,14 @@ public:
 		{
 			return *this;
 		}
-		if (m_vector != nullptr)
+        // ЛИШНЯЯ ПРОВЕРКА
+        // ПРИМЕНЕНИЕ delete К nullptr НЕ ЯВЛЯЕТСЯ ОШИБКОЙ
+        // А ВОТ ПРИМЕНЕНИЕ delete К НЕИНИЦИАЛИЗИРОВАННОМУ УКАЗАТЕЛЮ - ОШИБКА
+        // НЕИНИЦИАЛИЗИРОВАННЫЙ УКАЗАТЕЛЬ != nullptr
+        // У ТЕБЯ ВСЕГДА В КОНСТРУКТОРЕ ЭТОТ УКАЗАТЕЛЬ ИНИЦИАЛИЗИРУЕТСЯ
+        // (В КОНСТРУКТОРЕ ПО УМОЛЧАНИЮ БУДЕТ ИСПОЛЬЗОВАТЬСЯ ИНИЦИАЛИЗАЦИЯ
+        //  ПРИ ОБЪЯВЛЕНИИ: T* m_vector = nullptr)
+        if (m_vector != nullptr)
 		{
 			delete[]m_vector;
 		}		
@@ -226,10 +243,12 @@ public:
 	}
 	IT begin()
 	{
+        // ВМЕСТО &m_vector[0] ИСПОЛЬЗУЙ ПРОСТО m_vector
 		return IT(&m_vector[0],m_vector);
 	}
 	IT end()
 	{
+        // m_vector + m_amount - КАК ПО МНЕ, ТАК ЭТО НАГЛЯДНЕЕ БУДЕТ
 		return IT(&m_vector[m_amount],m_vector);
 	}
 	Vector& pushBack(const T elem)noexcept//E!
