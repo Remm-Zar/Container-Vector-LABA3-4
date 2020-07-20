@@ -44,8 +44,6 @@ public:
 		{
 			VectorIterator temp(*this);
 			--m_pos;
-            // ВОЗВРАЩАЕТСЯ ССЫЛКА НА ЛОКАЛЬНУЮ ПЕРЕМЕННУЮ,
-            // ТАК НЕЛЬЗЯ
 			return temp;
 		}
 		T& operator*()
@@ -77,7 +75,6 @@ public:
 		{
 			VectorIterator temp(*this);
 			temp.m_pos -= a;
-            // НАДО КОПИЮ ВОЗВРАЩАТЬ, ИСХОДНЫЙ ИТЕРАТОР МЕНЯТЬСЯ НЕ ДОЛЖЕН
 			return temp;
 		}
 		int operator -(const VectorIterator& it)
@@ -141,32 +138,26 @@ public:
 	Vector(const initializer_list<T>& list) :Vector(list.size())
 	{ 
 		int count = 0;
-        // ИСПОЛЬЗУЙ const auto&
-        // ВСЕГДА НАДО ИСПЛЬЗОВАТЬ КОНСТАНТНЫЕ ОБЪЕКТЫ, ЕСЛИ ТОЧНО ЗНАЕМ,
-        // ЧТО ОНИ НЕ ДОЛЖНЫ МЕНЯТЬСЯ
-        // ТАК НАДЁЖНЕЕ, КОМПИЛЯТОР БУДЕТ ПОДСКАЗЫВАТЬ В СЛУЧАЕ НЕПРЕДНАМЕРЕННОЙ
-        // ПОПЫТКИ ИЗМЕНИТЬ ТАКОЙ ОБЪЕКТ
 		for (const auto& elem : list)
 		{
 			m_vector[count] = elem;
 			++count;
 		}
 	}
-    // НАДО ПЕРЕДАВАТЬ ИТЕРАТОРЫ ПО ЗНАЧЕНИЮ, ТЫ ЖЕ ИЗМЕНЯЕШЬ ИХ ВНУТРИ ФУНКЦИИ,
-    // ПОЭТОМУ СЕЙЧАС ОНИ ИЗМЕНЯТСЯ И В ВЫЗЫВАЮЩЕЙ ФУНКЦИИ
-	template <typename U=IT>
-	Vector(U begin, U end):Vector(end - begin)
+	template <typename U>
+	Vector(U begin, U end)
 	{
 		int count = 0;
-		while (begin != end)
+		U begin_e = begin;
+		while (begin_e != end)
 		{
 			++count;
-			++begin;
+			++begin_e;
 		}
 		m_amount=count;
-		m_vector = new T[m_amount + 4];
 		m_len = m_amount + 4;
-		
+		m_vector = new T[m_len];
+		count = 0;		
 		while (begin != end)
 		{
 			m_vector[count] = *begin;
@@ -206,13 +197,6 @@ public:
 		{
 			return *this;
 		}
-        // ЛИШНЯЯ ПРОВЕРКА
-        // ПРИМЕНЕНИЕ delete К nullptr НЕ ЯВЛЯЕТСЯ ОШИБКОЙ
-        // А ВОТ ПРИМЕНЕНИЕ delete К НЕИНИЦИАЛИЗИРОВАННОМУ УКАЗАТЕЛЮ - ОШИБКА
-        // НЕИНИЦИАЛИЗИРОВАННЫЙ УКАЗАТЕЛЬ != nullptr
-        // У ТЕБЯ ВСЕГДА В КОНСТРУКТОРЕ ЭТОТ УКАЗАТЕЛЬ ИНИЦИАЛИЗИРУЕТСЯ
-        // (В КОНСТРУКТОРЕ ПО УМОЛЧАНИЮ БУДЕТ ИСПОЛЬЗОВАТЬСЯ ИНИЦИАЛИЗАЦИЯ
-        //  ПРИ ОБЪЯВЛЕНИИ: T* m_vector = nullptr)
 		delete[]m_vector;		
 		m_amount = v.m_amount;
 		m_len = v.m_len;
@@ -251,12 +235,10 @@ public:
 	}
 	IT begin()
 	{
-        // ВМЕСТО &m_vector[0] ИСПОЛЬЗУЙ ПРОСТО m_vector
 		return IT(m_vector,m_vector);
 	}
 	IT end()
 	{
-        // m_vector + m_amount - КАК ПО МНЕ, ТАК ЭТО НАГЛЯДНЕЕ БУДЕТ
 		return IT(m_vector+m_amount,m_vector);
 	}
 	Vector& pushBack(const T elem)noexcept//E!
@@ -360,6 +342,13 @@ public:
 	int capacity()
 	{
 		return m_len;
+	}
+	void emplace_back(){}
+	template<class First,class...Args>
+	void emplace_back(First f,Args...args)
+	{
+		pushBack(f);
+		emplace_back(args...);
 	}
 	void resize(int num)
 	{

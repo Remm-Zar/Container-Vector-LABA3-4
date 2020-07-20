@@ -139,10 +139,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Algorythm.cpp" />
     <ClCompile Include="Fraction.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorythm.h" />
