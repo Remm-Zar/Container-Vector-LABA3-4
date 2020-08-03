@@ -49,7 +49,7 @@ T1 For_each(T begin, T end, T1 other)
 {
     while (begin != end)
     {
-        other(begin);
+        other(*begin);
         ++begin;
     }
     return move(other);

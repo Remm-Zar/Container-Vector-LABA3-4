@@ -241,9 +241,16 @@ public:
 	{
 		return IT(m_vector+m_amount,m_vector);
 	}
-	Vector& pushBack(const T elem)noexcept//E!
+    Vector& pushBack(const T& elem)noexcept
 	{
 		_check_memory_(1,false);		
+		m_vector[m_amount] = elem;
+		++m_amount;
+		return *this;
+	}
+	Vector& pushBack(const T&& elem)noexcept
+	{
+		_check_memory_(1, false);
 		m_vector[m_amount] = elem;
 		++m_amount;
 		return *this;
@@ -343,12 +350,10 @@ public:
 	{
 		return m_len;
 	}
-	void emplace_back(){}
-	template<class First,class...Args>
-	void emplace_back(First f,Args...args)
+	template<class...Args>
+	void emplace_back(Args&&...args)
 	{
-		pushBack(f);
-		emplace_back(args...);
+		pushBack(T(forward<Args>(args)...));
 	}
 	void resize(int num)
 	{
