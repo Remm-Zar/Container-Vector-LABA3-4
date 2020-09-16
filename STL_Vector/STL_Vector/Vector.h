@@ -248,9 +248,14 @@ public:
 		++m_amount;
 		return *this;
 	}
+    // ССЫЛКА rvalue НЕ МОЖЕТ БЫТЬ КОНСТАНТНОЙ, ТАК КАК ПОДРАЗУМЕВАЕТСЯ,
+    // ЧТО ОБЪЕКТ СТАНЕТ ПУСТЫМ, ТО ЕСТЬ ИЗМЕНИТСЯ
 	Vector& pushBack(const T&& elem)noexcept
 	{
 		_check_memory_(1, false);
+        // ЗДЕСЬ ИСПОЛЬЗУЕТСЯ ОПЕРАТОР КОПИРОВАНИЯ, А НЕ ПЕРЕМЕЩЕНИЯ,
+        // ПОТОМУ ЧТО В ЭТОЙ СТРОЧКЕ elem УЖЕ lvalue (МЫ МОЖЕМ ВЗЯТЬ
+        // АДРЕС ЭТОЙ ПЕРЕМЕННОЙ) ХОТЬ И ТИП У НЕЁ T&&
 		m_vector[m_amount] = elem;
 		++m_amount;
 		return *this;

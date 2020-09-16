@@ -52,6 +52,8 @@ T1 For_each(T begin, T end, T1 other)
         other(*begin);
         ++begin;
     }
+    // КОМПИЛЯТОР В ДАННОМ СЛУЧАЕ ПО УМОЛЧАНИЮ ДОЛЖЕН ПРИМЕНЯТЬ move
+    // ПОЧИТАЙ 5.3 У МЕЙЕРСА ПРО ОПТИМИЗАЦИЮ ВОЗВРАЩАЕМЫХ ЗНАЧЕНИЙ ИЗ ФУНКЦИИ
     return move(other);
 }
 template<class T, class T2>
